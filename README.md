@@ -1,8 +1,9 @@
 # Gerenciador Automático de Pools de Liquidez Solana
 
-Um aplicativo web para gerenciar automaticamente alocações de liquidez em diferentes protocolos DeFi no ecossistema Solana.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Solana](https://img.shields.io/badge/Solana-Compatible-blueviolet)](https://solana.com/)
 
-![Gerenciador de Pools](https://image.shutterstock.com/shutterstock/photos/2173059479/display_1500/stock-vector-businessman-jumping-in-swimming-pool-of-money-illustrator-vector-cartoon-drawing-2173059479.jpg)
+Um aplicativo web para gerenciar automaticamente alocações de liquidez em diferentes protocolos DeFi no ecossistema Solana.
 
 ## Visão Geral
 
@@ -106,10 +107,22 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar
 4. Faça push para a branch (`git push origin feature/nova-funcionalidade`)
 5. Abra um Pull Request
 
+### Boas práticas para contribuição
+
+- Siga o estilo de código existente
+- Adicione testes para novas funcionalidades
+- Atualize a documentação quando necessário
+- Certifique-se de que todos os testes passam antes de enviar o PR
+- Referencie issues relacionadas no seu PR
+
 ## Licença
 
-Este projeto está licenciado sob a licença MIT - veja o arquivo LICENSE para detalhes.
+Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 ## Disclaimer
 
 Este software é fornecido "como está", sem garantias de qualquer tipo. Use por sua conta e risco. Sempre faça sua própria pesquisa antes de comprometer fundos reais em contratos DeFi.
+
+---
+
+⭐ Se este projeto foi útil para você, considere dar uma estrela no GitHub!
