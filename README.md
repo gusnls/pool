@@ -2,7 +2,7 @@
 
 Um aplicativo web para gerenciar automaticamente alocações de liquidez em diferentes protocolos DeFi no ecossistema Solana.
 
-![Gerenciador de Pools](https://example.com/screenshot.png)
+![Gerenciador de Pools](https://image.shutterstock.com/shutterstock/photos/2173059479/display_1500/stock-vector-businessman-jumping-in-swimming-pool-of-money-illustrator-vector-cartoon-drawing-2173059479.jpg)
 
 ## Visão Geral
 
