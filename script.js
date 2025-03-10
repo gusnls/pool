@@ -1,17 +1,17 @@
-// Script de automação para operações em pools de liquidez
-// Plataformas: Uniswap, Meteora, Orca e Raydium
+// Script de automação para operações em pools de liquidez Solana
+// Plataformas: Meteora, Orca e Raydium
 
-import { Connection, PublicKey } from '@solana/web3.js';
-import { ethers } from 'ethers';
-import axios from 'axios';
+// Verificar e acessar as bibliotecas carregadas como variáveis globais
+const solanaWeb3 = window.solanaWeb3js || window.solana;
+const { Connection, PublicKey } = solanaWeb3;
+const axios = window.axios;
 
 // Configuração da aplicação
 const CONFIG = {
   allocations: {
-    uniswap: 0.25,    // 25% para Uniswap (Ethereum)
-    meteora: 0.25,    // 25% para Meteora (Solana)
-    orca: 0.25,       // 25% para Orca (Solana)
-    raydium: 0.25     // 25% para Raydium (Solana)
+    meteora: 0.33,    // 33% para Meteora (Solana)
+    orca: 0.33,       // 33% para Orca (Solana)
+    raydium: 0.34     // 34% para Raydium (Solana)
   },
   rebalanceThreshold: 0.05,  // Rebalancear quando o rendimento diferir em 5%
   refreshInterval: 3600000,  // Verificar rendimentos a cada hora (em ms)
@@ -22,14 +22,11 @@ const CONFIG = {
 class LiquidityPoolManager {
   constructor() {
     this.initialized = false;
-    this.ethereumProvider = null;
     this.solanaConnection = null;
     this.walletAddresses = {
-      ethereum: null,
       solana: null
     };
     this.platformAPYs = {
-      uniswap: 0,
       meteora: 0,
       orca: 0,
       raydium: 0
@@ -45,13 +42,6 @@ class LiquidityPoolManager {
         await this.connectPhantom();
       } else {
         throw new Error("Phantom wallet não encontrada. Por favor, instale a extensão Phantom.");
-      }
-
-      // Verificar se o MetaMask ou provider compatível está disponível para Uniswap
-      if (window.ethereum) {
-        await this.connectEthereum();
-      } else {
-        throw new Error("Provider Ethereum não encontrado. Por favor, instale MetaMask ou outro provider compatível.");
       }
 
       this.initialized = true;
@@ -84,26 +74,6 @@ class LiquidityPoolManager {
     }
   }
 
-  // Conectar à carteira Ethereum (para Uniswap)
-  async connectEthereum() {
-    try {
-      // Solicitar conexão ao provider Ethereum
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = provider.getSigner();
-      this.ethereumProvider = signer;
-      
-      // Obter endereço da carteira
-      this.walletAddresses.ethereum = await signer.getAddress();
-      console.log("Carteira Ethereum conectada:", this.walletAddresses.ethereum);
-      
-      return true;
-    } catch (error) {
-      console.error("Erro ao conectar à carteira Ethereum:", error);
-      throw error;
-    }
-  }
-
   // Iniciar monitoramento dos rendimentos
   startMonitoring() {
     if (!this.initialized) {
@@ -124,8 +94,7 @@ class LiquidityPoolManager {
   async checkYields() {
     try {
       // Obter rendimentos atuais de cada plataforma
-      const [uniswapAPY, meteoraAPY, orcaAPY, raydiumAPY] = await Promise.all([
-        this.getUniswapAPY(),
+      const [meteoraAPY, orcaAPY, raydiumAPY] = await Promise.all([
         this.getMeteoraAPY(),
         this.getOrcaAPY(),
         this.getRaydiumAPY()
@@ -133,7 +102,6 @@ class LiquidityPoolManager {
       
       // Atualizar valores de APY
       this.platformAPYs = {
-        uniswap: uniswapAPY,
         meteora: meteoraAPY,
         orca: orcaAPY,
         raydium: raydiumAPY
@@ -222,9 +190,6 @@ class LiquidityPoolManager {
   // Adicionar liquidez a uma plataforma específica
   async addLiquidity(platform, allocationDelta) {
     switch (platform) {
-      case 'uniswap':
-        await this.addLiquidityUniswap(allocationDelta);
-        break;
       case 'meteora':
         await this.addLiquidityMeteora(allocationDelta);
         break;
@@ -240,9 +205,6 @@ class LiquidityPoolManager {
   // Remover liquidez de uma plataforma específica
   async removeLiquidity(platform, allocationDelta) {
     switch (platform) {
-      case 'uniswap':
-        await this.removeLiquidityUniswap(allocationDelta);
-        break;
       case 'meteora':
         await this.removeLiquidityMeteora(allocationDelta);
         break;
@@ -257,35 +219,25 @@ class LiquidityPoolManager {
 
   // ------ Implementações específicas para cada plataforma ------
 
-  // Obter APY atual do Uniswap
-  async getUniswapAPY() {
-    try {
-      // Aqui você implementaria a lógica para obter o APY atual do Uniswap
-      // Exemplo: consultar uma API ou calcular com base nos dados da blockchain
-      const response = await axios.get('https://api.example.com/uniswap/apy');
-      return response.data.apy || 0.05;  // Valor default para teste
-    } catch (error) {
-      console.error("Erro ao obter APY do Uniswap:", error);
-      return 0.05;  // Valor default em caso de erro
-    }
-  }
-
   // Obter APY atual do Meteora
   async getMeteoraAPY() {
     try {
-      // Implementação similar para Meteora
-      return 0.06;  // Valor default para teste
+      // Implementação para Meteora
+      // Exemplo: consultar uma API ou calcular com base nos dados da blockchain
+      const response = await axios.get('https://api.example.com/meteora/apy');
+      return response.data.apy || 0.06;  // Valor default para teste
     } catch (error) {
       console.error("Erro ao obter APY do Meteora:", error);
-      return 0.06;
+      return 0.06;  // Valor default em caso de erro
     }
   }
 
   // Obter APY atual do Orca
   async getOrcaAPY() {
     try {
-      // Implementação similar para Orca
-      return 0.055;  // Valor default para teste
+      // Implementação para Orca
+      const response = await axios.get('https://api.example.com/orca/apy');
+      return response.data.apy || 0.055;  // Valor default para teste
     } catch (error) {
       console.error("Erro ao obter APY do Orca:", error);
       return 0.055;
@@ -295,51 +247,12 @@ class LiquidityPoolManager {
   // Obter APY atual do Raydium
   async getRaydiumAPY() {
     try {
-      // Implementação similar para Raydium
-      return 0.065;  // Valor default para teste
+      // Implementação para Raydium
+      const response = await axios.get('https://api.example.com/raydium/apy');
+      return response.data.apy || 0.065;  // Valor default para teste
     } catch (error) {
       console.error("Erro ao obter APY do Raydium:", error);
       return 0.065;
-    }
-  }
-
-  // Adicionar liquidez no Uniswap (Ethereum)
-  async addLiquidityUniswap(allocationDelta) {
-    try {
-      console.log(`Adicionando liquidez no Uniswap. Delta: ${allocationDelta}`);
-      // Implementar lógica para adicionar liquidez no Uniswap usando ethers.js
-      // Este é um exemplo simplificado
-      /*
-      const uniswapRouterAddress = "0x..."; // Endereço do router Uniswap
-      const uniswapRouterABI = [...]; // ABI do router
-      const tokenA = "0x..."; // Endereço do token A
-      const tokenB = "0x..."; // Endereço do token B
-      
-      const router = new ethers.Contract(
-        uniswapRouterAddress,
-        uniswapRouterABI,
-        this.ethereumProvider
-      );
-      
-      // Chamar função de adicionar liquidez
-      const tx = await router.addLiquidity(
-        tokenA,
-        tokenB,
-        amountADesired,
-        amountBDesired,
-        amountAMin,
-        amountBMin,
-        this.walletAddresses.ethereum,
-        deadline
-      );
-      
-      await tx.wait();
-      */
-      
-      return true;
-    } catch (error) {
-      console.error("Erro ao adicionar liquidez no Uniswap:", error);
-      throw error;
     }
   }
 
@@ -376,18 +289,6 @@ class LiquidityPoolManager {
       return true;
     } catch (error) {
       console.error("Erro ao adicionar liquidez no Raydium:", error);
-      throw error;
-    }
-  }
-
-  // Remover liquidez do Uniswap
-  async removeLiquidityUniswap(allocationDelta) {
-    try {
-      console.log(`Removendo liquidez do Uniswap. Delta: ${allocationDelta}`);
-      // Implementar lógica para remover liquidez do Uniswap
-      return true;
-    } catch (error) {
-      console.error("Erro ao remover liquidez do Uniswap:", error);
       throw error;
     }
   }
@@ -434,14 +335,18 @@ class LiquidityPoolUI {
   constructor() {
     this.manager = new LiquidityPoolManager();
     this.initialized = false;
+    this.darkMode = false;
   }
   
   async initialize() {
     const initButton = document.getElementById('init-button');
     const statusDiv = document.getElementById('status');
+    const themeToggle = document.getElementById('toggle-theme');
     
+    // Adicionar evento de clique ao botão de inicialização
     initButton.addEventListener('click', async () => {
       statusDiv.innerText = "Inicializando...";
+      statusDiv.className = "status-info";
       
       try {
         const success = await this.manager.initialize();
@@ -449,17 +354,26 @@ class LiquidityPoolUI {
         if (success) {
           this.initialized = true;
           statusDiv.innerText = "Sistema inicializado com sucesso!";
+          statusDiv.className = "status-success";
           this.updateUI();
           
           // Iniciar atualização periódica da UI
           setInterval(() => this.updateUI(), 15000);
         } else {
           statusDiv.innerText = "Falha na inicialização. Verifique o console para detalhes.";
+          statusDiv.className = "status-error";
         }
       } catch (error) {
         statusDiv.innerText = `Erro: ${error.message}`;
+        statusDiv.className = "status-error";
         console.error(error);
       }
+    });
+    
+    // Adicionar evento de clique ao botão de alternar tema
+    themeToggle.addEventListener('click', () => {
+      this.darkMode = !this.darkMode;
+      document.body.classList.toggle('dark-mode', this.darkMode);
     });
   }
   
@@ -469,111 +383,69 @@ class LiquidityPoolUI {
     const allocationsDiv = document.getElementById('allocations');
     const apysDiv = document.getElementById('apys');
     
-    // Atualizar alocações
-    allocationsDiv.innerHTML = `
-      <h3>Alocações Atuais:</h3>
-      <ul>
-        <li>Uniswap: ${(this.manager.currentAllocations.uniswap * 100).toFixed(2)}%</li>
-        <li>Meteora: ${(this.manager.currentAllocations.meteora * 100).toFixed(2)}%</li>
-        <li>Orca: ${(this.manager.currentAllocations.orca * 100).toFixed(2)}%</li>
-        <li>Raydium: ${(this.manager.currentAllocations.raydium * 100).toFixed(2)}%</li>
-      </ul>
-    `;
+    // Atualizar alocações com barras de progresso
+    let allocationsHTML = `<h3>Alocações Atuais:</h3><ul>`;
+    
+    for (const [platform, allocation] of Object.entries(this.manager.currentAllocations)) {
+      allocationsHTML += `
+        <li class="allocation-item">
+          <div>
+            <span class="allocation-name">${platform.charAt(0).toUpperCase() + platform.slice(1)}</span>
+            <span class="tooltip">ⓘ
+              <span class="tooltip-text">Alocação atual em ${platform}</span>
+            </span>
+          </div>
+          <span class="allocation-value">${(allocation * 100).toFixed(2)}%</span>
+          <div class="progress-bar">
+            <div class="progress-bar-fill progress-${platform}" style="width: ${allocation * 100}%"></div>
+          </div>
+        </li>
+      `;
+    }
+    
+    allocationsHTML += `</ul>`;
+    allocationsDiv.innerHTML = allocationsHTML;
     
     // Atualizar APYs
-    apysDiv.innerHTML = `
-      <h3>APYs Atuais:</h3>
-      <ul>
-        <li>Uniswap: ${(this.manager.platformAPYs.uniswap * 100).toFixed(2)}%</li>
-        <li>Meteora: ${(this.manager.platformAPYs.meteora * 100).toFixed(2)}%</li>
-        <li>Orca: ${(this.manager.platformAPYs.orca * 100).toFixed(2)}%</li>
-        <li>Raydium: ${(this.manager.platformAPYs.raydium * 100).toFixed(2)}%</li>
-      </ul>
-    `;
+    let apysHTML = `<h3>APYs Atuais:</h3><ul>`;
+    
+    for (const [platform, apy] of Object.entries(this.manager.platformAPYs)) {
+      const apyClass = apy >= 0.05 ? "apy-value" : "apy-value apy-negative";
+      apysHTML += `
+        <li class="allocation-item">
+          <div>
+            <span class="allocation-name">${platform.charAt(0).toUpperCase() + platform.slice(1)}</span>
+            <span class="tooltip">ⓘ
+              <span class="tooltip-text">Rendimento anual percentual atual em ${platform}</span>
+            </span>
+          </div>
+          <span class="${apyClass}">${(apy * 100).toFixed(2)}%</span>
+        </li>
+      `;
+    }
+    
+    apysHTML += `</ul>`;
+    apysDiv.innerHTML = apysHTML;
   }
 }
 
-// Código HTML necessário para a UI
-/*
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerenciador de Pools de Liquidez</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .dashboard {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .dashboard > div {
-      flex: 1;
-      min-width: 300px;
-    }
-    button {
-      padding: 10px 15px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
-</head>
-<body>
-  <h1>Gerenciador Automático de Pools de Liquidez</h1>
-  
-  <div class="card">
-    <h2>Inicialização do Sistema</h2>
-    <p>Conecte suas carteiras para começar a utilizar o sistema.</p>
-    <button id="init-button">Inicializar Sistema</button>
-    <div id="status" style="margin-top: 10px;"></div>
-  </div>
-  
-  <div class="dashboard">
-    <div class="card" id="allocations">
-      <h3>Alocações Atuais:</h3>
-      <p>Inicialize o sistema para ver as alocações.</p>
-    </div>
-    
-    <div class="card" id="apys">
-      <h3>APYs Atuais:</h3>
-      <p>Inicialize o sistema para ver os rendimentos.</p>
-    </div>
-  </div>
-  
-  <div class="card">
-    <h2>Configurações</h2>
-    <p>As configurações serão implementadas em uma versão futura.</p>
-  </div>
-  
-  <script src="script.js"></script>
-</body>
-</html>
-*/
-
 // Inicializar a aplicação quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
+  // Verificar se as bibliotecas necessárias estão disponíveis
+  if (!window.solanaWeb3js && !window.solana) {
+    console.error("Biblioteca Solana Web3.js não encontrada");
+    document.getElementById('status').innerText = "Erro: Biblioteca Solana Web3.js não encontrada";
+    document.getElementById('status').className = "status-error";
+    return;
+  }
+  
+  if (!window.axios) {
+    console.error("Biblioteca axios não encontrada");
+    document.getElementById('status').innerText = "Erro: Biblioteca axios não encontrada";
+    document.getElementById('status').className = "status-error";
+    return;
+  }
+  
   const app = new LiquidityPoolUI();
   app.initialize();
 });
-
-// Exportar classes para uso externo
-export { LiquidityPoolManager, LiquidityPoolUI };

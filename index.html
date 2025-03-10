@@ -1,53 +1,20 @@
-// Código HTML necessário para a UI
-
 <!DOCTYPE html>
 <html lang="pt-br">
-<link rel="stylesheet" href="styles.css">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerenciador de Pools de Liquidez</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .dashboard {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .dashboard > div {
-      flex: 1;
-      min-width: 300px;
-    }
-    button {
-      padding: 10px 15px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+  <title>Gerenciador de Pools de Liquidez Solana</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Bibliotecas necessárias -->
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-  <h1>Gerenciador Automático de Pools de Liquidez</h1>
+  <h1>Gerenciador Automático de Pools de Liquidez Solana</h1>
   
   <div class="card">
     <h2>Inicialização do Sistema</h2>
-    <p>Conecte suas carteiras para começar a utilizar o sistema.</p>
+    <p>Conecte sua carteira Phantom para começar a utilizar o sistema.</p>
     <button id="init-button">Inicializar Sistema</button>
     <div id="status" style="margin-top: 10px;"></div>
   </div>
@@ -67,6 +34,7 @@
   <div class="card">
     <h2>Configurações</h2>
     <p>As configurações serão implementadas em uma versão futura.</p>
+    <button id="toggle-theme" class="theme-toggle">Alternar Tema</button>
   </div>
   
   <script src="script.js"></script>
